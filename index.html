@@ -9,7 +9,7 @@
   <script defer src="script.js"></script>
 </head>
 <body>
-  <!-- 调试信息显示 -->
+
   <div id="debug" style="position: fixed; top: 10px; right: 10px; background: yellow; padding: 10px; display: none;">
     调试信息
   </div>
@@ -32,16 +32,16 @@
     <p>请拖动两个圆圈的大小，左边代表生产前的自己，右边代表生产后的自己。</p>
     <div id="canvas1" class="canvas-container"></div>
     <button id="next1">确定</button>
-    <button onclick="switchPage(1)">返回上一步</button>
+    <button id="back1">返回上一步</button>
   </div>
 
   <!-- 阶段3 -->
   <div id="page3" class="page">
     <h2>阶段2：自己与孩子的重要性</h2>
-    <p>左边圆圈代表生产后的自己，右边圆圈代表孩子。<br>请拖动右边圆圈的大小，表示孩子的重要性。</p>
+    <p>左边圆圈代表生产后的自己，右边圆圈代表孩子。请拖动右边圆圈的大小，表示孩子的重要性。</p>
     <div id="canvas2" class="canvas-container"></div>
     <button id="next2">确定</button>
-    <button onclick="switchPage(2)">返回上一步</button>
+    <button id="back2">返回上一步</button>
   </div>
 
   <!-- 阶段4 -->
@@ -51,67 +51,10 @@
     <div id="canvas3" class="canvas-container"></div>
     <p id="overlapText">重叠面积：</p>
     <button id="download">下载CSV数据</button>
-    <button onclick="switchPage(3)">返回上一步</button>
+    <button id="back3">返回上一步</button>
   </div>
 
-  <!-- 加载状态提示 -->
-  <div id="loading" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 20px; border-radius: 10px;">
-    加载中，请稍候...
-  </div>
+  <div id="loading">加载中，请稍候...</div>
 
-  <script>
-    // 简单的调试函数
-    function debug(msg) {
-      console.log(msg);
-      const debugDiv = document.getElementById('debug');
-      if (debugDiv) {
-        debugDiv.innerHTML = msg;
-        debugDiv.style.display = 'block';
-        setTimeout(() => { debugDiv.style.display = 'none'; }, 3000);
-      }
-    }
-
-    // 显示加载状态
-    function showLoading() {
-      document.getElementById('loading').style.display = 'block';
-    }
-
-    // 隐藏加载状态
-    function hideLoading() {
-      document.getElementById('loading').style.display = 'none';
-    }
-
-    // 页面切换函数（确保在全局可访问）
-    function switchPage(num) {
-      debug('切换到页面: ' + num);
-      
-      // 隐藏所有页面
-      document.querySelectorAll(".page").forEach(p => {
-        p.classList.remove("active");
-      });
-      
-      // 显示目标页面
-      const targetPage = document.getElementById(`page${num}`);
-      if (targetPage) {
-        targetPage.classList.add("active");
-        debug('成功显示页面: page' + num);
-      } else {
-        debug('错误：找不到页面 page' + num);
-      }
-      
-      // 滚动到顶部
-      window.scrollTo(0, 0);
-    }
-
-    // 确保页面加载完成后初始化
-    document.addEventListener('DOMContentLoaded', function() {
-      debug('页面加载完成');
-      
-      // 测试页面切换
-      setTimeout(() => {
-        debug('DOM完全加载');
-      }, 100);
-    });
-  </script>
 </body>
 </html>
