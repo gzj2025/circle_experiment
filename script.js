@@ -20,8 +20,16 @@ function debug(msg) {
 // ---------- 页面切换 ----------
 function switchPage(num) {
   document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  document.getElementById(`page${num}`).classList.add("active");
+  const page = document.getElementById(`page${num}`);
+  page.classList.add("active");
   window.scrollTo(0,0);
+
+  // 延迟初始化 p5，确保 div 可见
+  setTimeout(() => {
+    if(num === 2) startStage1();
+    if(num === 3) startStage2();
+    if(num === 4) startStage3();
+  }, 50);
 }
 
 // ---------- 页面事件绑定 ----------
@@ -29,9 +37,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   await syncPendingSubmissions(); // 页面加载时尝试同步未提交数据
 
-  // 阶段1表单提交
-  document.getElementById("infoForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+  // 点击“开始实验”
+  document.getElementById("startBtn").onclick = async () => {
     data.name = document.getElementById("name").value;
     data.age = document.getElementById("age").value;
     data.alipayAccount = document.getElementById("alipayAccount").value;
@@ -40,8 +47,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     await submitToGitHub({ stage: '基本信息提交' });
 
     switchPage(2);
-    startStage1();
-  });
+  };
 
   // 阶段1下一步
   document.getElementById("next1").onclick = async () => {
@@ -49,7 +55,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     data.afterSelfSize = circles[1].r;
     await submitToGitHub({ stage: '阶段1完成', beforeSelfSize: data.beforeSelfSize, afterSelfSize: data.afterSelfSize });
     switchPage(3);
-    startStage2();
   };
 
   // 阶段2下一步
@@ -57,7 +62,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     data.childSize = circles[1].r;
     await submitToGitHub({ stage: '阶段2完成', childSize: data.childSize });
     switchPage(4);
-    startStage3();
   };
 
   // 下载CSV并提交最终数据
@@ -324,4 +328,3 @@ async function syncPendingSubmissions() {
   if(pending.length===0) debug('本地未提交数据已全部同步');
   else debug(`剩余 ${pending.length} 条数据未同步`);
 }
-
