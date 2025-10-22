@@ -64,13 +64,16 @@ document.addEventListener("DOMContentLoaded", async ()=>{
     switchPage(4);
   };
 
-  // 下载CSV
-  document.getElementById("download").onclick = async ()=>{
+  // 阶段4 完成实验
+  document.getElementById("finish").onclick = async ()=>{
     const overlap = document.getElementById("overlapText").textContent.replace('重叠面积：','');
     data.overlapArea = overlap;
+
+    // 提交最终数据
     await submitToGitHub({stage:'实验完成', overlapArea:overlap, finalData:true});
-    downloadCSV();
-    alert('实验数据已保存！');
+
+    // 跳转到实验结束页面
+    switchPage(5);
   };
 });
 
@@ -172,13 +175,8 @@ function intersectionArea(p,c1,c2){
   return 0.5*r2*r2*(beta-Math.sin(beta))+0.5*r1*r1*(alpha-Math.sin(alpha));
 }
 function drawOverlap(p,c1,c2){p.beginShape(); for(let a=0;a<p.TWO_PI;a+=0.01){let x=c1.x+Math.cos(a)*c1.r; let y=c1.y+Math.sin(a)*c1.r; if(p.dist(x,y,c2.x,c2.y)<c2.r) p.vertex(x,y);} p.endShape(p.CLOSE);}
-function downloadCSV(){const overlap=document.getElementById("overlapText").textContent.replace('重叠面积：',''); const csv=["姓名,年龄,支付宝账号,支付宝昵称,生产前自我半径,生产后自我半径,孩子半径,重叠面积",`${data.name},${data.age},${data.alipayAccount},${data.alipayName},${data.beforeSelfSize.toFixed(1)},${data.afterSelfSize.toFixed(1)},${data.childSize.toFixed(1)},${overlap}`].join("\n"); const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8;"})); a.download=`${data.name}_experiment.csv`; a.click();}
 
-// ---------- GitHub 提交 ----------
-async function submitToGitHub(additionalData={}){ /* 与原代码一致，可保留 */}
-
-// ---------- 本地缓存 ----------
-function saveToLocal(submission){/* 与原代码一致 */}
-
-// ---------- 同步本地未提交数据 ----------
-async function syncPendingSubmissions(){/* 与原代码一致 */}
+// ---------- GitHub 提交、缓存、同步 ----------
+async function submitToGitHub(additionalData={}){ /* 保留原代码 */ }
+function saveToLocal(submission){ /* 保留原代码 */ }
+async function syncPendingSubmissions(){ /* 保留原代码 */ }
