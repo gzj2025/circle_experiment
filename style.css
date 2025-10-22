@@ -2,46 +2,214 @@ body {
   text-align: center;
   font-family: "Microsoft YaHei", Arial, sans-serif;
   background: #f6f6f6;
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
 }
 
+/* 页面控制 */
 .page {
   display: none;
-  margin-top: 60px;
+  margin-top: 20px;
+  animation: fadeIn 0.5s ease-in;
 }
 
 .page.active {
   display: block;
 }
 
-form {
-  display: inline-block;
+/* 画布容器 */
+.canvas-container {
+  margin: 20px auto;
+  padding: 10px;
   background: white;
-  padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
-}
-
-input {
-  margin: 8px;
-  padding: 5px;
-  width: 180px;
-}
-
-button {
-  padding: 8px 20px;
-  background: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #45a049;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  display: inline-block;
 }
 
 canvas {
   border: 2px solid #444;
   background: white;
-  margin-top: 20px;
+  display: block;
+  margin: 0 auto;
+  border-radius: 8px;
+}
+
+/* 表单样式 */
+form {
+  display: inline-block;
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  text-align: left;
+  min-width: 300px;
+}
+
+form label {
+  display: inline-block;
+  width: 120px;
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+input {
+  margin: 10px;
+  padding: 8px 12px;
+  width: 200px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+input:focus {
+  border-color: #4CAF50;
+  outline: none;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+/* 按钮样式 */
+button {
+  padding: 12px 25px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 10px;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+button:hover {
+  background: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 返回按钮特殊样式 */
+button[onclick*="switchPage"] {
+  background: #6c757d;
+}
+
+button[onclick*="switchPage"]:hover {
+  background: #5a6268;
+}
+
+/* 调试信息 */
+#debug {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: #ffeb3b;
+  color: #333;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-size: 14px;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  border-left: 4px solid #ffc107;
+}
+
+/* 加载状态 */
+#loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 20px 30px;
+  border-radius: 10px;
+  z-index: 9999;
+  font-size: 16px;
+}
+
+/* 重叠面积显示 */
+#overlapText {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 20px;
+  padding: 15px;
+  background: white;
+  border-radius: 10px;
+  display: inline-block;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+  
+  form {
+    padding: 20px;
+    width: 90%;
+    min-width: auto;
+  }
+  
+  form label {
+    width: 100px;
+  }
+  
+  input {
+    width: 150px;
+  }
+  
+  .canvas-container {
+    width: 95%;
+    overflow-x: auto;
+  }
+  
+  canvas {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  button {
+    padding: 10px 20px;
+    min-width: 100px;
+    font-size: 14px;
+  }
+}
+
+/* 标题样式 */
+h2 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+/* 说明文字 */
+p {
+  color: #666;
+  margin: 15px 0;
+  line-height: 1.6;
+  font-size: 16px;
 }
