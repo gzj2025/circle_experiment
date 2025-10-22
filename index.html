@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>母亲自我与孩子关系实验</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <!-- 阶段1：填写基本信息 -->
+  <div id="page1" class="page active">
+    <h2>参与者信息填写</h2>
+    <form id="infoForm">
+      <label>姓名：</label><input type="text" id="name" required><br>
+      <label>年龄：</label><input type="number" id="age" required><br>
+      <label>支付宝账号：</label><input type="text" id="alipayAccount" required><br>
+      <label>支付宝昵称：</label><input type="text" id="alipayName" required><br>
+      <button type="submit">开始实验</button>
+    </form>
+  </div>
+
+  <!-- 阶段2 -->
+  <div id="page2" class="page">
+    <h2>阶段1：生产前与生产后的自己</h2>
+    <p>请拖动两个圆圈的大小，左边代表生产前的自己，右边代表生产后的自己。</p>
+    <div id="canvas1"></div>
+    <button id="next1">确定</button>
+  </div>
+
+  <!-- 阶段3 -->
+  <div id="page3" class="page">
+    <h2>阶段2：自己与孩子的重要性</h2>
+    <p>左边圆圈代表生产后的自己，右边圆圈代表孩子。<br>请拖动右边圆圈的大小，表示孩子的重要性。</p>
+    <div id="canvas2"></div>
+    <button id="next2">确定</button>
+  </div>
+
+  <!-- 阶段4 -->
+  <div id="page4" class="page">
+    <h2>阶段3：您与孩子的关系距离</h2>
+    <p>您可以拖动两个圆圈的距离，代表您与孩子之间的关系。</p>
+    <div id="canvas3"></div>
+    <p id="overlapText">重叠面积：</p>
+    <button id="download">下载CSV数据</button>
+  </div>
+</body>
+</html>
