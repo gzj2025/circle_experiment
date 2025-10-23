@@ -77,14 +77,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 function startStage1() {
   new p5(p => {
     p.setup = function () {
-      let canvas = p.createCanvas(800, 500);
+      let canvas = p.createCanvas(1000, 500);
       canvas.parent("canvas1");
 
       // 各占画布一半，互不重叠
-      let r = 200;
+      let r = 250;
       circles = [
-        new Circle(p, 200, 250, r, "red", "生产前的自己"),
-        new Circle(p, 600, 250, r, "blue", "生产后的自己")
+        new Circle(p, 250, 250, r, "red", "生产前的自己"),
+        new Circle(p, 750, 250, r, "blue", "生产后的自己")
       ];
     };
 
