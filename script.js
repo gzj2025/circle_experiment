@@ -26,9 +26,8 @@ function switchPage(num) {
 
 // ---------- 页面事件绑定 ----------
 document.addEventListener("DOMContentLoaded", async () => {
-  await syncPendingSubmissions(); // 页面加载时尝试同步未提交数据
+  await syncPendingSubmissions();
 
-  // 阶段1表单提交
   document.getElementById("infoForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     data.name = document.getElementById("name").value;
@@ -42,7 +41,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     startStage1();
   });
 
-  // 阶段1下一步
   document.getElementById("next1").onclick = async () => {
     data.beforeSelfSize = circles[0].r;
     data.afterSelfSize = circles[1].r;
@@ -51,7 +49,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     startStage2();
   };
 
-  // 阶段2下一步
   document.getElementById("next2").onclick = async () => {
     data.childSize = circles[1].r;
     await submitToGitHub({ stage: '阶段2完成', childSize: data.childSize });
@@ -59,7 +56,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     startStage3();
   };
 
-  // 下载CSV并提交最终数据
   document.getElementById("download").onclick = async () => {
     const overlap = document.getElementById("overlapText").textContent.replace('重叠面积：', '');
     data.overlapArea = overlap;
@@ -67,24 +63,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     downloadCSV();
     alert('实验数据已保存！');
   };
-
-  // 返回按钮
-  const backBtns = document.querySelectorAll("button[onclick*='switchPage']");
-  backBtns.forEach(btn => btn.addEventListener('click', () => selected = null));
 });
 
 // ---------- 阶段1 ----------
 function startStage1() {
   new p5(p => {
     p.setup = function () {
-      let canvas = p.createCanvas(1000, 500);
+      let canvas = p.createCanvas(1000, 600); // 画布更大
       canvas.parent("canvas1");
 
       // 各占画布一半，互不重叠
       let r = 250;
       circles = [
-        new Circle(p, 250, 250, r, "red", "生产前的自己"),
-        new Circle(p, 750, 250, r, "blue", "生产后的自己")
+        new Circle(p, 250, 300, r, "red", "生产前的自己"),
+        new Circle(p, 750, 300, r, "blue", "生产后的自己")
       ];
     };
 
@@ -103,11 +95,11 @@ function startStage1() {
 function startStage2() {
   new p5(p => {
     p.setup = function () {
-      let canvas = p.createCanvas(800, 500);
+      let canvas = p.createCanvas(1000, 600);
       canvas.parent("canvas2");
       circles = [
-        new Circle(p, 300, 250, data.afterSelfSize, "blue", "生产后的自己"),
-        new Circle(p, 500, 250, 60, "green", "孩子")
+        new Circle(p, 400, 300, data.afterSelfSize, "blue", "生产后的自己"),
+        new Circle(p, 600, 300, 80, "green", "孩子")
       ];
     };
     p.draw = function () {
@@ -124,11 +116,11 @@ function startStage2() {
 function startStage3() {
   new p5(p => {
     p.setup = function () {
-      let canvas = p.createCanvas(800, 500);
+      let canvas = p.createCanvas(1000, 600);
       canvas.parent("canvas3");
       circles = [
-        new Circle(p, 300, 250, data.afterSelfSize, "blue", "自己"),
-        new Circle(p, 500, 250, data.childSize, "green", "孩子")
+        new Circle(p, 400, 300, data.afterSelfSize, "blue", "自己"),
+        new Circle(p, 600, 300, data.childSize, "green", "孩子")
       ];
     };
     p.draw = function () {
@@ -174,14 +166,14 @@ function selectCircle(p) {
 function resizeCircle(p) {
   if (selected) {
     let d = p.dist(p.mouseX, p.mouseY, selected.x, selected.y);
-    selected.r = p.constrain(d, 30, 200);
+    selected.r = p.constrain(d, 30, 300);
   }
 }
 
 function moveCircle(p) {
   if (selected) {
-    selected.x = p.constrain(p.mouseX, 100, 700);
-    selected.y = p.constrain(p.mouseY, 50, 450);
+    selected.x = p.constrain(p.mouseX, 150, 850);
+    selected.y = p.constrain(p.mouseY, 100, 500);
   }
 }
 
@@ -218,11 +210,9 @@ function downloadCSV() {
   a.click();
 }
 
-// ---------- GitHub 提交 ----------
+// ---------- GitHub 提交与同步 ----------
 async function submitToGitHub(additionalData = {}) {
   const submissionData = { ...data, ...additionalData, timestamp: new Date().toISOString(), userAgent: navigator.userAgent };
-
-  // 获取IP地址
   try {
     const ipResp = await fetch('https://api.ipify.org?format=json');
     const ipData = await ipResp.json();
@@ -232,99 +222,12 @@ async function submitToGitHub(additionalData = {}) {
   try {
     const issueData = {
       title: `实验数据 - ${submissionData.name} - ${new Date(submissionData.timestamp).toLocaleDateString()}`,
-      body: `## 参与者信息
-- 姓名: ${submissionData.name}
-- 年龄: ${submissionData.age}
-- 支付宝账号: ${submissionData.alipayAccount}
-- 支付宝昵称: ${submissionData.alipayName}
-
-## 实验数据
-- 生产前自我半径: ${submissionData.beforeSelfSize || ''}
-- 生产后自我半径: ${submissionData.afterSelfSize || ''}
-- 孩子半径: ${submissionData.childSize || ''}
-- 重叠面积: ${submissionData.overlapArea || ''}
-
-## 其他信息
-- 提交阶段: ${submissionData.stage || '未知'}
-- 时间戳: ${submissionData.timestamp}
-- IP地址: ${submissionData.ip}`,
+      body: JSON.stringify(submissionData, null, 2),
       labels: ['实验数据']
     };
-
     const resp = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues`, {
       method: 'POST',
       headers: {
         'Authorization': `token ${GITHUB_TOKEN}`,
         'Accept': 'application/vnd.github.v3+json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(issueData)
-    });
-
-    if (resp.ok) { console.log('数据已提交GitHub'); return true; }
-    else { console.error('提交失败:', await resp.text()); saveToLocal(submissionData); return false; }
-  } catch (e) { console.error('网络错误:', e); saveToLocal(submissionData); return false; }
-}
-
-// ---------- 本地缓存 ----------
-function saveToLocal(submission) {
-  const pending = JSON.parse(localStorage.getItem('pendingSubmissions') || '[]');
-  pending.push(submission);
-  localStorage.setItem('pendingSubmissions', JSON.stringify(pending));
-}
-
-// ---------- 同步本地未提交数据 ----------
-async function syncPendingSubmissions() {
-  let pending = JSON.parse(localStorage.getItem('pendingSubmissions') || '[]');
-  if (pending.length === 0) return;
-
-  debug(`发现 ${pending.length} 条未提交数据，尝试同步...`);
-
-  for (let i = 0; i < pending.length; i++) {
-    let item = pending[i];
-    try {
-      const issueData = {
-        title: `实验数据 - ${item.name} - ${new Date(item.timestamp).toLocaleDateString()}`,
-        body: `## 参与者信息
-- 姓名: ${item.name}
-- 年龄: ${item.age}
-- 支付宝账号: ${item.alipayAccount}
-- 支付宝昵称: ${item.alipayName}
-
-## 实验数据
-- 生产前自我半径: ${item.beforeSelfSize || ''}
-- 生产后自我半径: ${item.afterSelfSize || ''}
-- 孩子半径: ${item.childSize || ''}
-- 重叠面积: ${item.overlapArea || ''}
-
-## 其他信息
-- 提交阶段: ${item.stage || '未知'}
-- 时间戳: ${item.timestamp}
-- IP地址: ${item.ip || '未知'}`,
-        labels: ['实验数据']
-      };
-
-      const resp = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `token ${GITHUB_TOKEN}`,
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(issueData)
-      });
-
-      if (resp.ok) {
-        debug(`第 ${i + 1} 条本地数据同步成功`);
-        pending.splice(i, 1);
-        i--;
-        localStorage.setItem('pendingSubmissions', JSON.stringify(pending));
-      } else {
-        debug(`第 ${i + 1} 条同步失败`);
-      }
-    } catch (err) { console.error('同步错误:', err); }
-  }
-
-  if (pending.length === 0) debug('本地未提交数据已全部同步');
-  else debug(`剩余 ${pending.length} 条数据未同步`);
-}
+        'Content
